@@ -55,7 +55,9 @@ function MazeGrid() {
     carvePath(1, 1);
 
     matrix[1][0] = 'start';
-    matrix[height - 2][width - 1] = 'end';
+    const endX = (width - 1) % 2 === 0 ? width - 2 : width - 1;
+    const endY = (height - 2) % 2 === 0 ? height - 3 : height - 2;
+    matrix[endY][endX] = 'end';
 
     setMaze(matrix);
     // return matrix;
