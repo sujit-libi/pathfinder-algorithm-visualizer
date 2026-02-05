@@ -281,7 +281,7 @@ function MazeGrid({ width = 20, height = 20 }) {
   function refreshMaze() {
     timeoutIds.forEach((id) => clearTimeout(id));
     setTimeoutIds([]);
-    generateMaze(20, 20);
+    generateMaze(width, height);
   }
 
   return (
