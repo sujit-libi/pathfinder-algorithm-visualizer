@@ -1,27 +1,42 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-function MazeGrid() {
-  const initialMaze = [
-    ['wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
-    ['start', 'path', 'path', 'path', 'path', 'wall'],
-    ['wall', 'wall', 'wall', 'wall', 'path', 'wall'],
-    ['wall', 'end', 'path', 'path', 'path', 'wall'],
-    ['wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
-  ];
-  const [width, setWidth] = useState(initialMaze[0].length);
-  const [height, setHeight] = useState(initialMaze.length);
+function MazeGrid({ width = 20, height = 20 }) {
+  // const initialMaze = [
+  //   ['wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
+  //   ['start', 'path', 'path', 'path', 'path', 'wall'],
+  //   ['wall', 'wall', 'wall', 'wall', 'path', 'wall'],
+  //   ['wall', 'end', 'path', 'path', 'path', 'wall'],
+  //   ['wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
+  // ];
+  // const [width, setWidth] = useState(initialMaze[0].length);
+  // const [height, setHeight] = useState(initialMaze.length);
 
-  const [maze, setMaze] = useState(initialMaze);
+  const [maze, setMaze] = useState([]);
+  const [timeoutIds, setTimeoutIds] = useState([]);
 
-  function bfs(startNode) {
+  useEffect(() => {
+    generateMaze(width, height);
+    // setMaze(initializeMaze);
+  }, [width, height]);
+
+  async function bfs(startNode) {
     // BFS algorithm to find the shortest path from startNode to 'end'
     let queue = [startNode];
     let visited = new Set(`${startNode[0]},${startNode[1]}`);
 
     function visitCell([x, y]) {
-      console.log(x, y);
+      setMaze((prevMaze) =>
+        prevMaze.map((row, rowIndex) =>
+          row.map((cell, cellIndex) => {
+            if (rowIndex === y && cellIndex === x) {
+              return cell === 'end' ? 'end' : 'visited';
+            }
+            return cell;
+          }),
+        ),
+      );
+
       if (maze[y][x] === 'end') {
-        console.log('Path found');
         return true;
       }
       return false;
@@ -38,7 +53,6 @@ function MazeGrid() {
 
     while (queue.length > 0) {
       const [x, y] = queue.shift();
-      console.log('here goes new step');
 
       for (const [dx, dy] of dirs) {
         const nx = x + dx;
@@ -53,6 +67,10 @@ function MazeGrid() {
         ) {
           visited.add(`${nx},${ny}`);
           if (maze[ny][nx] === 'path' || maze[ny][nx] === 'end') {
+            await new Promise((resolve) => {
+              const timeoutId = setTimeout(resolve, 100);
+              setTimeoutIds((prevTimeoutIds) => [...prevTimeoutIds, timeoutId]);
+            }); // Delay for visualization
             if (visitCell([nx, ny])) {
               return true;
             }
@@ -107,15 +125,23 @@ function MazeGrid() {
     // return true/false if path found
   }
 
-  function dfs(startNode) {
+  async function dfs(startNode) {
     // DFS algorithm to find a path from startNode to 'end'
     let stack = [startNode];
     let visited = new Set(`${startNode[0]},${startNode[1]}`);
 
     function visitCell([x, y]) {
-      console.log(x, y);
+      setMaze((prevMaze) =>
+        prevMaze.map((row, rowIndex) =>
+          row.map((cell, cellIndex) => {
+            if (rowIndex === y && cellIndex === x) {
+              return cell === 'end' ? 'end' : 'visited';
+            }
+            return cell;
+          }),
+        ),
+      );
       if (maze[y][x] === 'end') {
-        console.log('Path found');
         return true;
       }
       return false;
@@ -144,6 +170,10 @@ function MazeGrid() {
         ) {
           visited.add(`${nx},${ny}`);
           if (maze[ny][nx] === 'path' || maze[ny][nx] === 'end') {
+            await new Promise((resolve) => {
+              const timeoutId = setTimeout(resolve, 100);
+              setTimeoutIds((prevTimeoutIds) => [...prevTimeoutIds, timeoutId]);
+            }); // Delay for visualization
             if (visitCell([nx, ny])) {
               return true;
             }
@@ -152,7 +182,6 @@ function MazeGrid() {
         }
       }
     }
-    console.log('No path found');
     return false;
 
     // function step() {
@@ -243,24 +272,30 @@ function MazeGrid() {
     const endX = (width - 1) % 2 === 0 ? width - 2 : width - 1;
     const endY = (height - 2) % 2 === 0 ? height - 3 : height - 2;
     matrix[endY][endX] = 'end';
-    setHeight(matrix.length);
-    setWidth(matrix[0].length);
+    // setHeight(matrix.length);
+    // setWidth(matrix[0].length);
     setMaze(matrix);
     // return matrix;
+  }
+
+  function refreshMaze() {
+    timeoutIds.forEach((id) => clearTimeout(id));
+    setTimeoutIds([]);
+    generateMaze(width, height);
   }
 
   return (
     <div className="maze-grid">
       <div className="controls">
         {/** Button */}
-        <button className="maze-btn" onClick={() => generateMaze(20, 20)}>
+        <button className="maze-btn" onClick={() => refreshMaze()}>
           Refresh Maze
         </button>
         <button className="maze-btn" onClick={() => bfs([0, 1])}>
-          BFS
+          Breadth-First Search
         </button>
         <button className="maze-btn" onClick={() => dfs([0, 1])}>
-          DFS
+          Depth-First Search
         </button>
       </div>
       <div className="maze">

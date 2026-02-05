@@ -45,6 +45,10 @@
   background-color: black;
 }
 
+.cell.visited {
+  background-color: rgb(101, 197, 235);
+}
+
 .cell.path {
   background-color: white;
 }
