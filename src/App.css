@@ -6,6 +6,12 @@
   height: 100vh;
 }
 
+.controls {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20px;
+}
+
 .maze-btn {
   background-color: rgb(46, 151, 216);
   color: white;
