@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 function MazeGrid() {
-  let initialMaze = [
+  const initialMaze = [
     ['wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
     ['start', 'path', 'path', 'path', 'path', 'wall'],
     ['wall', 'wall', 'wall', 'wall', 'path', 'wall'],
@@ -27,23 +27,23 @@ function MazeGrid() {
       return false;
     }
 
-    function step() {
-      if (queue.length === 0) {
-        console.log('No path found');
-        return;
-      }
+    // New method for BFS
+
+    const dirs = [
+      [0, 1],
+      [1, 0],
+      [0, -1],
+      [-1, 0],
+    ];
+
+    while (queue.length > 0) {
       const [x, y] = queue.shift();
-      console.log('new step');
-      const dirs = [
-        [0, 1],
-        [1, 0],
-        [0, -1],
-        [-1, 0],
-      ];
+      console.log('here goes new step');
 
       for (const [dx, dy] of dirs) {
         const nx = x + dx;
         const ny = y + dy;
+
         if (
           nx >= 0 &&
           nx < width &&
@@ -60,10 +60,49 @@ function MazeGrid() {
           }
         }
       }
-      step();
     }
+    console.log('No path found');
+    return false;
 
-    step();
+    // Old method
+
+    // function step() {
+    //   if (queue.length === 0) {
+    //     console.log('No path found');
+    //     return;
+    //   }
+    //   const [x, y] = queue.shift();
+    //   console.log('new step');
+    //   const dirs = [
+    //     [0, 1],
+    //     [1, 0],
+    //     [0, -1],
+    //     [-1, 0],
+    //   ];
+
+    //   for (const [dx, dy] of dirs) {
+    //     const nx = x + dx;
+    //     const ny = y + dy;
+    //     if (
+    //       nx >= 0 &&
+    //       nx < width &&
+    //       ny >= 0 &&
+    //       ny < height &&
+    //       !visited.has(`${nx},${ny}`)
+    //     ) {
+    //       visited.add(`${nx},${ny}`);
+    //       if (maze[ny][nx] === 'path' || maze[ny][nx] === 'end') {
+    //         if (visitCell([nx, ny])) {
+    //           return true;
+    //         }
+    //         queue.push([nx, ny]);
+    //       }
+    //     }
+    //   }
+    //   step();
+    // }
+
+    // step();
 
     // return true/false if path found
   }
@@ -82,20 +121,17 @@ function MazeGrid() {
       return false;
     }
 
-    function step() {
-      if (stack.length === 0) {
-        console.log('No path found');
-        return;
-      }
-      const [x, y] = stack.pop();
-      console.log('new step');
-      const dirs = [
-        [0, 1],
-        [1, 0],
-        [0, -1],
-        [-1, 0],
-      ];
+    // New method for DFS
 
+    const dirs = [
+      [0, 1],
+      [1, 0],
+      [0, -1],
+      [-1, 0],
+    ];
+
+    while (stack.length > 0) {
+      const [x, y] = stack.pop();
       for (const [dx, dy] of dirs) {
         const nx = x + dx;
         const ny = y + dy;
@@ -115,11 +151,48 @@ function MazeGrid() {
           }
         }
       }
-      step();
     }
-
-    step();
+    console.log('No path found');
     return false;
+
+    // function step() {
+    //   if (stack.length === 0) {
+    //     console.log('No path found');
+    //     return;
+    //   }
+    //   const [x, y] = stack.pop();
+    //   console.log('new step');
+    //   const dirs = [
+    //     [0, 1],
+    //     [1, 0],
+    //     [0, -1],
+    //     [-1, 0],
+    //   ];
+
+    //   for (const [dx, dy] of dirs) {
+    //     const nx = x + dx;
+    //     const ny = y + dy;
+    //     if (
+    //       nx >= 0 &&
+    //       nx < width &&
+    //       ny >= 0 &&
+    //       ny < height &&
+    //       !visited.has(`${nx},${ny}`)
+    //     ) {
+    //       visited.add(`${nx},${ny}`);
+    //       if (maze[ny][nx] === 'path' || maze[ny][nx] === 'end') {
+    //         if (visitCell([nx, ny])) {
+    //           return true;
+    //         }
+    //         stack.push([nx, ny]);
+    //       }
+    //     }
+    //   }
+    //   step();
+    // }
+
+    // step();
+    // return false;
     // return true/false if path found
   }
 
@@ -183,10 +256,10 @@ function MazeGrid() {
         <button className="maze-btn" onClick={() => generateMaze(20, 20)}>
           Refresh Maze
         </button>
-        <button className="maze-btn" onClick={() => bfs([1, 0])}>
+        <button className="maze-btn" onClick={() => bfs([0, 1])}>
           BFS
         </button>
-        <button className="maze-btn" onClick={() => dfs([1, 0])}>
+        <button className="maze-btn" onClick={() => dfs([0, 1])}>
           DFS
         </button>
       </div>
